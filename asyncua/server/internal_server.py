@@ -74,6 +74,7 @@ class InternalServer:
             self, self.aspace, self.subscription_service, "Internal", user=User(role=UserRole.Admin)
         )
         self.current_time_node = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus_CurrentTime))
+        self.serv_status_cur_time = Node(self.isession, ua.NodeId(ua.ObjectIds.Server_ServerStatus))
         self.time_task = None
         self._time_task_stop = False
         self.match_discovery_endpoint_url: bool = True
@@ -209,6 +210,13 @@ class InternalServer:
 
     async def _set_current_time_loop(self):
         while not self._time_task_stop:
+            try : 
+                status = await self.serv_status_cur_time.get_value()
+                if status is not None :
+                    status.CurrentTime = datetime.utcnow()
+                    await self.serv_status_cur_time.write_value(status)
+            except Exception as e :
+                print(e)
             await self.current_time_node.write_value(datetime.utcnow())
             await asyncio.sleep(1)
 

@@ -290,7 +290,7 @@ class UaProcessor:
                 results = await self.session.write(params)
                 response = ua.WriteResponse()
                 response.Results = results
-                # _logger.info("sending write response")
+                _logger.info("sending write response")
                 self.send_response(requesthdr.RequestHandle, seqhdr, response)
 
             elif typeid == ua.NodeId(ua.ObjectIds.BrowseRequest_Encoding_DefaultBinary):
